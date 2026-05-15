@@ -1,0 +1,219 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  userId    String   @id
+  name      String
+  role      String   // admin / teacher / student
+  password  String   @default("123456")
+  college   String
+  major     String?
+  grade     String?
+  email     String?
+  phone     String?
+  status    Int      @default(1)  // 1=正常 0=停用
+  banned    Boolean  @default(false)  // 禁止参赛
+  createdAt DateTime @default(now())
+
+  createdCompetitions  Competition[]     @relation("CompetitionCreator")
+  teamsAsCaptain       Team[]            @relation("TeamCaptain")
+  teamMembers          TeamMember[]
+  registrationsAsStudent  Registration[] @relation("RegistrationStudent")
+  registrationsAsAdvisor Registration[] @relation("RegistrationAdvisor")
+  reviewerAssignments  ReviewerAssignment[]
+  reviews              Review[]
+  notifications        Notification[]
+  feedbacks            Feedback[]
+  inviteCodes          InviteCode[]
+}
+
+model Competition {
+  competitionId String   @id
+  title         String
+  organizer     String
+  category      String
+  description   String
+  detail        String?
+  coverImage    String?
+  creatorId     String
+  creator       User     @relation("CompetitionCreator", fields: [creatorId], references: [userId])
+  status        String   @default("draft") // draft/pending/published/registering/reviewing/final/ended/cancelled
+  regStart      String
+  regEnd        String
+  submitStart   String
+  submitEnd     String
+  reviewStart   String
+  reviewEnd     String
+  finalTime     String?
+  finalLocation String?
+  resultTime    String
+  allowFormats  String   @default("zip,rar,pdf,ppt,mp4")
+  maxFileSize   Int      @default(100)
+  allowIndividual Boolean @default(false)
+  teamMin       Int?
+  teamMax       Int?
+  requireAdvisor Boolean @default(false)
+  reviewMode    String   @default("open")
+  auditComment  String?
+  createdAt     String
+  updatedAt     String
+
+  registrations       Registration[]
+  scoringRubrics      ScoringRubric[]
+  reviewerAssignments ReviewerAssignment[]
+  awards              Award[]
+}
+
+model ScoringRubric {
+  rubricId      String @id
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [competitionId], onDelete: Cascade)
+  name          String
+  maxScore      Float
+  weight        Float
+  sortOrder     Int
+
+  reviewDetails ReviewDetail[]
+}
+
+model Team {
+  teamId    String   @id
+  name      String
+  captainId String
+  captain   User     @relation("TeamCaptain", fields: [captainId], references: [userId])
+  createdAt DateTime @default(now())
+
+  members      TeamMember[]
+  registrations Registration[]
+}
+
+model TeamMember {
+  id        String @id
+  teamId    String
+  team      Team   @relation(fields: [teamId], references: [teamId], onDelete: Cascade)
+  studentId String
+  student   User   @relation(fields: [studentId], references: [userId])
+  role      String // captain / member
+  status    String @default("invited") // invited / accepted / rejected
+}
+
+model Registration {
+  registrationId String @id
+  competitionId  String
+  competition    Competition @relation(fields: [competitionId], references: [competitionId], onDelete: Cascade)
+  teamId         String?
+  team           Team?       @relation(fields: [teamId], references: [teamId])
+  studentId      String?
+  student        User?       @relation("RegistrationStudent", fields: [studentId], references: [userId])
+  workTitle      String
+  advisorId      String?
+  advisor        User?       @relation("RegistrationAdvisor", fields: [advisorId], references: [userId])
+  notes          String?
+  status         String @default("registered") // registered/submitted/qualified/disqualified
+  createdAt      String
+  isFinalist     Boolean @default(false)
+
+  workFiles  WorkFile[]
+  reviews    Review[]
+  awards     Award[]
+}
+
+model WorkFile {
+  fileId         String @id
+  registrationId String
+  registration   Registration @relation(fields: [registrationId], references: [registrationId], onDelete: Cascade)
+  fileName       String
+  filePath       String
+  fileSize       Int
+  fileType       String
+  uploadedAt     String
+}
+
+model ReviewerAssignment {
+  id            String      @id
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [competitionId], onDelete: Cascade)
+  teacherId     String
+  teacher       User        @relation(fields: [teacherId], references: [userId])
+  assignedAt    String
+}
+
+model Review {
+  reviewId       String @id
+  registrationId String
+  registration   Registration @relation(fields: [registrationId], references: [registrationId], onDelete: Cascade)
+  reviewerId     String
+  reviewer       User         @relation(fields: [reviewerId], references: [userId])
+  totalScore     Float?
+  comment        String?
+  status         String @default("draft") // draft / submitted
+  submittedAt    String?
+
+  details ReviewDetail[]
+}
+
+model ReviewDetail {
+  id       String        @id
+  reviewId String
+  review   Review        @relation(fields: [reviewId], references: [reviewId], onDelete: Cascade)
+  rubricId String
+  rubric   ScoringRubric @relation(fields: [rubricId], references: [rubricId], onDelete: Cascade)
+  score    Float
+}
+
+model Award {
+  awardId        String        @id
+  competitionId  String
+  competition    Competition   @relation(fields: [competitionId], references: [competitionId], onDelete: Cascade)
+  name           String
+  quota          Int
+  registrationId String?
+  registration   Registration? @relation(fields: [registrationId], references: [registrationId])
+}
+
+model Notification {
+  notificationId String   @id
+  userId         String
+  user           User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  title          String
+  content        String
+  read           Boolean  @default(false)
+  createdAt      String
+}
+
+model InviteCode {
+  code      String    @id
+  createdBy String
+  creator   User      @relation(fields: [createdBy], references: [userId], onDelete: Cascade)
+  maxUses   Int       @default(1)
+  usedCount Int       @default(0)
+  colleges  String    // JSON array of college names, e.g. ["计算机学院","数学学院"]
+  role      String    @default("student") // student / teacher
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+}
+
+model Feedback {
+  feedbackId String   @id
+  userId     String
+  user       User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  title      String
+  content    String
+  status     String   @default("open")  // open / resolved
+  adminReply String?
+  createdAt  String
+  updatedAt  String
+}
+
+model SystemConfig {
+  id         String @id @default("main")
+  schoolName String @default("XX大学")
+  colleges   String @default("[]")  // JSON array
+  categories String @default("[]") // JSON array
+}

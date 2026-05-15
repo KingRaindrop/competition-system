@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.env
+**/*.db
+**/*.db-journal
+**/uploads/*
+!.gitkeep
+.git
+*.md
+需求文档.html
+start.bat

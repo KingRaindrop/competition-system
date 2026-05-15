@@ -1,0 +1,19 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-secret}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+      PORT: 3000
+      RUN_SEED: ${RUN_SEED:-false}
+    volumes:
+      - data:/app/prisma
+      - uploads:/app/uploads
+    restart: unless-stopped
+
+volumes:
+  data:
+  uploads:

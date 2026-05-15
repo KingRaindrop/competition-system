@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>嘉应学院学科竞赛报名评审系统 — 需求规格说明书</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --primary-light: #2980b9;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-secondary: #5a6c7d;
+            --border: #e0e4e8;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --tag-admin: #e74c3c;
+            --tag-teacher: #2980b9;
+            --tag-student: #27ae60;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #1a3c4a 0%, #1a5276 50%, #1f6f8b 100%);
+            color: #fff;
+            padding: 60px 0 48px;
+            text-align: center;
+        }
+        header h1 { font-size: 2.2em; font-weight: 700; letter-spacing: 2px; margin-bottom: 10px; }
+        header .subtitle { font-size: 1.1em; opacity: .85; font-weight: 300; }
+        header .meta { margin-top: 20px; font-size: .9em; opacity: .7; }
+
+        /* Navigation */
+        nav.toc {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top:0; z-index: 100;
+            padding: 16px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        }
+        nav.toc .container { display:flex; flex-wrap:wrap; gap:8px; }
+        nav.toc a {
+            color: var(--primary);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: .9em;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        nav.toc a:hover { background: var(--primary); color: #fff; }
+
+        /* Sections */
+        section { padding: 48px 0; }
+        section:nth-child(even) { background: #fff; }
+        h2 {
+            font-size: 1.6em;
+            color: var(--primary);
+            border-left: 4px solid var(--primary-light);
+            padding-left: 16px;
+            margin-bottom: 24px;
+        }
+        h3 {
+            font-size: 1.2em;
+            color: var(--primary);
+            margin: 32px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border);
+        }
+        h4 { font-size: 1.05em; color: #34495e; margin: 20px 0 10px; }
+
+        p, li { color: var(--text-secondary); }
+        ul, ol { padding-left: 24px; }
+        li { margin-bottom: 6px; }
+
+        /* Cards */
+        .card-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-top: 20px; }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            transition: box-shadow .2s;
+        }
+        .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+        .card h4 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+        .card h4 .icon { font-size: 1.3em; }
+
+        /* Tables */
+        .table-wrap { overflow-x: auto; margin: 16px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .93em;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #eef2f7;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        tr:nth-child(even) td { background: #fafbfc; }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 3px;
+            font-size: .82em;
+            font-weight: 600;
+            color: #fff;
+        }
+        .tag-admin { background: var(--tag-admin); }
+        .tag-teacher { background: var(--tag-teacher); }
+        .tag-student { background: var(--tag-student); }
+        .tag-p0 { background: #e74c3c; }
+        .tag-p1 { background: #f39c12; }
+        .tag-p2 { background: #3498db; }
+
+        /* Flow */
+        .flow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            counter-reset: step;
+            margin: 24px 0;
+        }
+        .flow-step {
+            flex: 1 1 140px;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 16px;
+            text-align: center;
+            position: relative;
+            counter-increment: step;
+        }
+        .flow-step::before {
+            content: counter(step);
+            display: block;
+            width: 32px; height: 32px;
+            line-height: 32px;
+            margin: 0 auto 10px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: .95em;
+        }
+        .flow-step strong { display:block; margin-bottom: 6px; color: var(--primary); }
+        .flow-step span { font-size: .85em; color: var(--text-secondary); }
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            font-size: 1.5em;
+            color: var(--primary-light);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 32px 0;
+            color: #999;
+            font-size: .85em;
+            border-top: 1px solid var(--border);
+        }
+
+        .highlight-box {
+            background: #eaf2f8;
+            border-left: 4px solid var(--primary-light);
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: .93em;
+        }
+
+        /* status badge */
+        .status-draft { color: #95a5a6; }
+        .status-pending { color: #f39c12; }
+        .status-published { color: #27ae60; }
+        .status-rejected { color: #e74c3c; }
+        .status-closed { color: #7f8c8d; }
+
+        @media print {
+            nav.toc { position:static; }
+            header { padding: 30px 0; }
+            section { padding: 24px 0; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1>嘉应学院学科竞赛报名评审系统</h1>
+        <p class="subtitle">需求规格说明书（Software Requirements Specification）</p>
+        <p class="meta">版本：V1.0 &nbsp;|&nbsp; 日期：2026-04-28 &nbsp;|&nbsp; 状态：初稿</p>
+    </div>
+</header>
+
+<nav class="toc">
+    <div class="container">
+        <a href="#s1">1. 概述</a>
+        <a href="#s2">2. 角色与权限</a>
+        <a href="#s3">3. 功能需求</a>
+        <a href="#s4">4. 业务流程</a>
+        <a href="#s5">5. 数据字典</a>
+        <a href="#s6">6. 界面原型要求</a>
+        <a href="#s7">7. 非功能需求</a>
+        <a href="#s8">8. 附录</a>
+    </div>
+</nav>
+
+<!-- ==================== 1. 概述 ==================== -->
+<section id="s1">
+<div class="container">
+<h2>1. 概述</h2>
+
+<h3>1.1 项目背景</h3>
+<p>嘉应学院每年举办大量学科竞赛，涵盖各学院、各专业方向。目前竞赛的报名、材料收集、评审组织等工作主要依赖线下手工方式（纸质表格、邮件、U盘拷贝等），存在以下痛点：</p>
+<ul>
+    <li>信息分散，学生难以及时获取竞赛通知</li>
+    <li>报名信息填写不规范，汇总统计耗时费力</li>
+    <li>作品文件收集混乱，版本管理困难</li>
+    <li>评审过程缺乏统一平台，评分记录不便追溯</li>
+    <li>结果公示依赖群消息/公告栏，传播效率低</li>
+</ul>
+<p>为此，拟开发一套<strong>学科竞赛报名评审系统</strong>，实现竞赛从创建、审核、发布、报名、作品提交、在线评审到结果公布的全流程数字化管理。</p>
+
+<h3>1.2 系统目标</h3>
+<ol>
+    <li><strong>统一管理：</strong>将竞赛信息、报名数据、作品文件、评审记录集中管理</li>
+    <li><strong>流程规范：</strong>固化竞赛业务流程，减少人为疏漏</li>
+    <li><strong>提升效率：</strong>自动化报名汇总、材料归档、分数计算等重复性工作</li>
+    <li><strong>信息透明：</strong>学生可实时跟踪竞赛状态，评审结果可公开查询</li>
+    <li><strong>数据安全：</strong>不同角色权限分离，保障数据安全与评审公正</li>
+</ol>
+
+<h3>1.3 适用范围</h3>
+<p>本系统适用于嘉应学院校内各级各类学科竞赛的报名与评审管理，包括但不限于：</p>
+<ul>
+    <li>校级学科竞赛（教务处/团委主办）</li>
+    <li>院级专业竞赛（各二级学院主办）</li>
+    <li>省级/国家级竞赛的校内选拔赛</li>
+    <li>创新创业类竞赛</li>
+</ul>
+
+<h3>1.4 术语定义</h3>
+<table>
+    <tr><th style="width:120px">术语</th><th>说明</th></tr>
+    <tr><td>竞赛/比赛</td><td>由教师创建、管理员审核后发布的学科竞赛活动</td></tr>
+    <tr><td>团队</td><td>由学生自行组建的参赛单位，包含队长和若干队员</td></tr>
+    <tr><td>个人参赛</td><td>以个人身份报名，无需组队（可视为1人团队的特殊情况）</td></tr>
+    <tr><td>作品</td><td>参赛者提交的成果文件，格式由建赛教师指定</td></tr>
+    <tr><td>评审</td><td>评委对参赛作品进行打分评价的过程</td></tr>
+    <tr><td>决赛</td><td>线下进行的最终评选环节（如答辩、展示等）</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ==================== 2. 角色与权限 ==================== -->
+<section id="s2">
+<div class="container">
+<h2>2. 角色与权限</h2>
+
+<h3>2.1 角色定义</h3>
+<div class="card-grid">
+    <div class="card">
+        <h4><span class="icon">🛡️</span> 管理员 <span class="tag tag-admin">Admin</span></h4>
+        <p style="margin-top:12px;">系统全局管理者，通常由教务处或相关职能部门工作人员担任。</p>
+        <ul>
+            <li><strong>审核比赛：</strong>对教师提交的竞赛进行审核（通过/驳回）</li>
+            <li><strong>管理比赛：</strong>查看、编辑、下架、删除所有竞赛</li>
+            <li><strong>人员管理：</strong>管理系统用户账号（增删改查、角色分配）</li>
+            <li><strong>数据统计：</strong>查看全校竞赛数据报表</li>
+            <li><strong>系统配置：</strong>管理基础数据（学院列表、学科分类等）</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h4><span class="icon">👨‍🏫</span> 教师 <span class="tag tag-teacher">Teacher</span></h4>
+        <p style="margin-top:12px;">竞赛的组织者和管理者，可同时担任不同竞赛的不同角色。</p>
+        <ul>
+            <li><strong>创建比赛：</strong>填写比赛信息，提交管理员审核</li>
+            <li><strong>管理比赛：</strong>编辑自己创建的比赛信息（审核通过前可修改）</li>
+            <li><strong>评委指派：</strong>为比赛选择评审老师</li>
+            <li><strong>担任评委：</strong>对被指派的参赛作品进行评分</li>
+            <li><strong>担任指导老师：</strong>被学生关联为指导老师</li>
+            <li><strong>结果管理：</strong>确认并公布比赛最终结果</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h4><span class="icon">🎓</span> 学生 <span class="tag tag-student">Student</span></h4>
+        <p style="margin-top:12px;">竞赛的参与主体，可浏览比赛、报名参赛、提交作品。</p>
+        <ul>
+            <li><strong>浏览比赛：</strong>查看已发布的竞赛列表及详细信息</li>
+            <li><strong>报名参赛：</strong>以团队或个人形式报名</li>
+            <li><strong>创建/加入团队：</strong>组建参赛团队，邀请队员</li>
+            <li><strong>上传作品：</strong>在指定时间段内提交参赛作品</li>
+            <li><strong>查看结果：</strong>查看评分及获奖情况</li>
+        </ul>
+    </div>
+</div>
+
+<h3>2.2 权限矩阵</h3>
+<div class="table-wrap">
+<table>
+    <tr>
+        <th style="width:30%">功能模块</th>
+        <th style="width:20%"><span class="tag tag-admin">管理员</span></th>
+        <th style="width:20%"><span class="tag tag-teacher">教师</span></th>
+        <th style="width:20%"><span class="tag tag-student">学生</span></th>
+    </tr>
+    <tr><td>用户管理（增删改查）</td><td>✅ 全部</td><td>❌</td><td>❌</td></tr>
+    <tr><td>基础数据配置</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    <tr><td>创建竞赛</td><td>✅</td><td>✅</td><td>❌</td></tr>
+    <tr><td>审核竞赛</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    <tr><td>编辑本人创建的竞赛</td><td>✅ 全部</td><td>✅ 仅自己的</td><td>❌</td></tr>
+    <tr><td>下架/删除竞赛</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    <tr><td>浏览已发布竞赛</td><td>✅</td><td>✅</td><td>✅</td></tr>
+    <tr><td>报名参赛</td><td>❌</td><td>❌</td><td>✅</td></tr>
+    <tr><td>创建/管理团队</td><td>❌</td><td>❌</td><td>✅</td></tr>
+    <tr><td>上传作品</td><td>❌</td><td>❌</td><td>✅（队长）</td></tr>
+    <tr><td>指派评委</td><td>✅</td><td>✅（建赛者）</td><td>❌</td></tr>
+    <tr><td>评审打分</td><td>❌</td><td>✅（被指派的评委）</td><td>❌</td></tr>
+    <tr><td>查看评审结果</td><td>✅</td><td>✅（相关比赛的）</td><td>✅（本人参与的）</td></tr>
+    <tr><td>公布比赛结果</td><td>✅</td><td>✅（建赛者）</td><td>❌</td></tr>
+    <tr><td>数据统计报表</td><td>✅ 全校</td><td>✅ 本人相关</td><td>❌</td></tr>
+</table>
+</div>
+</div>
+</section>
+
+<!-- ==================== 3. 功能需求 ==================== -->
+<section id="s3">
+<div class="container">
+<h2>3. 功能需求</h2>
+
+<!-- 3.1 -->
+<h3>3.1 用户管理模块</h3>
+<table>
+    <tr><th style="width:40px">编号</th><th style="width:150px">功能点</th><th>详细描述</th><th style="width:70px">优先级</th></tr>
+    <tr>
+        <td>U-01</td><td>统一身份认证</td>
+        <td>对接嘉应学院统一身份认证系统（CAS/SSO），使用学号/工号登录。首次登录自动创建账号并根据身份分配默认角色。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>U-02</td><td>账号管理</td>
+        <td>管理员可对用户账号进行查询、创建、停用、角色变更操作。支持批量导入用户。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>U-03</td><td>个人信息维护</td>
+        <td>用户可修改个人资料（手机号、邮箱、头像、所属学院/专业等），不可修改学号/工号和姓名。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>U-04</td><td>角色分配</td>
+        <td>一个用户可同时拥有多个角色（如某教师既是建赛者又是评委），按当前操作上下文切换。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>U-05</td><td>操作日志</td>
+        <td>记录用户关键操作（登录、创建比赛、审核、评分等），支持管理员查询审计。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+</table>
+
+<!-- 3.2 -->
+<h3>3.2 竞赛管理模块</h3>
+<table>
+    <tr><th style="width:40px">编号</th><th style="width:150px">功能点</th><th>详细描述</th><th style="width:70px">优先级</th></tr>
+    <tr>
+        <td>C-01</td><td>创建竞赛</td>
+        <td>教师填写竞赛信息表单，含：竞赛名称、主办单位、学科分类、竞赛简介、参赛对象（年级/学院限制）、报名开始/截止时间、作品上传开始/截止时间、评审开始/截止时间、决赛时间与地点、结果公布时间、作品允许格式（多选：zip/rar/pdf/doc/ppt/mp4等）、最大文件大小、是否允许个人参赛、团队人数限制（最小/最大）、是否需要指导老师、封面图片、详细说明（富文本）。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>C-02</td><td>保存草稿</td>
+        <td>教师可将未填写完成的竞赛保存为草稿，稍后继续编辑。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+    <tr>
+        <td>C-03</td><td>提交审核</td>
+        <td>教师确认竞赛信息无误后提交审核，竞赛状态变更为"待审核"。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>C-04</td><td>审核竞赛</td>
+        <td>管理员查看待审核竞赛详情，可选择<strong>通过</strong>（竞赛自动发布）或<strong>驳回</strong>（需填写驳回理由）。审核通过后竞赛状态变为"已发布"，学生端可见。驳回后竞赛回到"草稿"状态，教师可修改后重新提交。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>C-05</td><td>竞赛列表</td>
+        <td>按状态分类展示竞赛（草稿/待审核/已发布/报名中/评审中/已结束）。支持按名称、学科、主办单位筛选，支持按时间排序。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>C-06</td><td>竞赛详情</td>
+        <td>展示竞赛完整信息。学生端显示报名入口、剩余时间倒计时；教师端显示报名人数统计；管理员端显示审核操作区。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>C-07</td><td>编辑竞赛</td>
+        <td>建赛教师可在"草稿"或"已驳回"状态下编辑竞赛信息。已发布竞赛如需修改，需申请并由管理员审批。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>C-08</td><td>下架/关闭竞赛</td>
+        <td>管理员可手动下架竞赛（紧急情况）。竞赛到达结果公布时间后自动变为"已结束"。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>C-09</td><td>竞赛日历</td>
+        <td>以日历视图展示当月竞赛关键时间节点（报名截止、评审开始等）。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+</table>
+
+<h4>竞赛状态流转</h4>
+<div class="flow-steps">
+    <div class="flow-step"><strong>草稿</strong><span>教师创建/被驳回</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><strong>待审核</strong><span>教师提交审核</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><strong>已发布</strong><span>管理员审核通过</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><strong>报名中</strong><span>到达报名开始时间</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><strong>评审中</strong><span>到达评审开始时间</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><strong>决赛阶段</strong><span>公布决赛名单</span></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step"><strong>已结束</strong><span>公布最终结果</span></div>
+</div>
+
+<!-- 3.3 -->
+<h3>3.3 报名管理模块</h3>
+<table>
+    <tr><th style="width:40px">编号</th><th style="width:150px">功能点</th><th>详细描述</th><th style="width:70px">优先级</th></tr>
+    <tr>
+        <td>R-01</td><td>团队创建</td>
+        <td>学生可创建参赛团队，填写团队名称，成为队长。系统生成唯一团队编号。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>R-02</td><td>邀请队员</td>
+        <td>队长可通过学号/姓名搜索并邀请其他学生加入团队。被邀请学生收到通知，可选择接受或拒绝。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>R-03</td><td>团队管理</td>
+        <td>队长可移出队员、解散团队、转让队长身份。团队人数需在竞赛设定的范围内。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>R-04</td><td>个人报名</td>
+        <td>若竞赛允许个人参赛，学生可直接以个人身份报名，无需组建团队。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>R-05</td><td>提交报名</td>
+        <td>队长（或个人参赛者）选择目标竞赛，填写报名信息：作品名称/题目、指导老师（选填，若竞赛要求则必填）、团队成员确认、补充说明。提交后生成报名记录。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>R-06</td><td>报名信息修改</td>
+        <td>在报名截止前，队长可修改报名信息（含队员调整）。截止后不可修改。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>R-07</td><td>取消报名</td>
+        <td>在报名截止前，队长可取消报名。截止后不可取消。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+    <tr>
+        <td>R-08</td><td>报名审核（可选）</td>
+        <td>建赛教师可设置报名是否需要审核。如需审核，学生提交报名后由教师确认方可生效。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+    <tr>
+        <td>R-09</td><td>报名汇总导出</td>
+        <td>建赛教师可导出报名汇总表（Excel），含团队信息、队员列表、指导老师等。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+</table>
+
+<!-- 3.4 -->
+<h3>3.4 作品管理模块</h3>
+<table>
+    <tr><th style="width:40px">编号</th><th style="width:150px">功能点</th><th>详细描述</th><th style="width:70px">优先级</th></tr>
+    <tr>
+        <td>W-01</td><td>上传作品</td>
+        <td>在作品上传时间段内，队长可上传参赛作品。支持多文件上传，单文件大小不超过竞赛设定上限（建议默认100MB）。上传时显示进度条。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>W-02</td><td>格式校验</td>
+        <td>系统自动校验上传文件扩展名是否在竞赛允许的格式范围内，不符合则拒绝并提示。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>W-03</td><td>文件管理</td>
+        <td>队长可查看已上传文件列表，在上传截止前可删除和重新上传。上传截止后锁定。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>W-04</td><td>作品预览</td>
+        <td>支持常见格式的在线预览（PDF、图片、视频）。不支持预览的格式提供下载按钮。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+    <tr>
+        <td>W-05</td><td>提交确认</td>
+        <td>队长确认作品提交完成后点击"确认提交"，此时作品状态变为"已提交"。未确认的可继续修改。上传截止时间到达时，系统自动将已上传作品标记为"已提交"。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>W-06</td><td>作品下载</td>
+        <td>评委和建赛教师可下载参赛作品文件进行评阅。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>W-07</td><td>版本记录</td>
+        <td>保留文件的上传/删除历史记录，便于追溯。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+</table>
+
+<!-- 3.5 -->
+<h3>3.5 评审管理模块</h3>
+<table>
+    <tr><th style="width:40px">编号</th><th style="width:150px">功能点</th><th>详细描述</th><th style="width:70px">优先级</th></tr>
+    <tr>
+        <td>E-01</td><td>评委指派</td>
+        <td>建赛教师（或管理员）在评审开始前，从教师列表中为竞赛指派若干评委。可设置每位评委需评审的作品范围（全部/按编号分配）。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>E-02</td><td>评审标准设置</td>
+        <td>建赛教师设置评分维度（如创新性、实用性、技术难度、展示效果等），每个维度可设分值范围和权重。系统根据各维度得分×权重计算加权总分。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>E-03</td><td>在线评分</td>
+        <td>评委在评审时间段内，查看分配给自己的作品，按评分维度逐项打分，可填写评语。支持暂存草稿和正式提交。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>E-04</td><td>盲评模式（可选）</td>
+        <td>建赛教师可设置评审为盲评模式，即评委看不到参赛者的姓名、学号等身份信息，仅看到作品内容和匿名编号。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>E-05</td><td>评分汇总</td>
+        <td>系统自动汇总所有评委对每个作品的评分，计算平均分（可设置去掉最高/最低分）。按平均分降序排列生成排名。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>E-06</td><td>决赛名单确定</td>
+        <td>建赛教师根据排名和预设的决赛名额，手动或自动确定进入决赛的名单。系统生成决赛通知。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>E-07</td><td>评审进度监控</td>
+        <td>建赛教师可查看各评委的评分进度（已评/未评数量），可发送催促提醒。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>E-08</td><td>评审结果查看</td>
+        <td>评审结束后，参赛学生可查看自己团队的评分和评语（评委匿名）。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+</table>
+
+<!-- 3.6 -->
+<h3>3.6 结果公布模块</h3>
+<table>
+    <tr><th style="width:40px">编号</th><th style="width:150px">功能点</th><th>详细描述</th><th style="width:70px">优先级</th></tr>
+    <tr>
+        <td>P-01</td><td>设置奖项</td>
+        <td>建赛教师设置奖项等级（如一等奖、二等奖、三等奖、优秀奖）及每个等级的获奖名额或比例。</td>
+        <td><span class="tag tag-p1">P1</span></td>
+    </tr>
+    <tr>
+        <td>P-02</td><td>公布结果</td>
+        <td>建赛教师确认获奖名单后点击"公布结果"，系统自动生成结果公告页面，对所有用户可见。同时可向获奖团队发送系统通知。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>P-03</td><td>获奖证书生成</td>
+        <td>系统根据获奖名单自动生成电子证书（PDF），包含竞赛名称、获奖等级、团队成员、指导老师等信息。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+    <tr>
+        <td>P-04</td><td>结果公示</td>
+        <td>结果公布后，在系统首页展示结果公告。支持公示期设置（如7天），公示期内接受异议反馈。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+</table>
+
+<!-- 3.7 -->
+<h3>3.7 消息通知模块</h3>
+<table>
+    <tr><th style="width:40px">编号</th><th style="width:150px">功能点</th><th>详细描述</th><th style="width:70px">优先级</th></tr>
+    <tr>
+        <td>N-01</td><td>站内消息</td>
+        <td>系统内消息中心，接收各类通知（审核结果、报名状态变更、评审邀请、结果公布等）。</td>
+        <td><span class="tag tag-p0">P0</span></td>
+    </tr>
+    <tr>
+        <td>N-02</td><td>时间节点提醒</td>
+        <td>在关键时间节点前（如报名截止前24小时、作品上传截止前1小时）自动发送提醒。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+    <tr>
+        <td>N-03</td><td>邮件通知（可选）</td>
+        <td>重要通知同时发送至用户学校邮箱。</td>
+        <td><span class="tag tag-p2">P2</span></td>
+    </tr>
+</table>
+</div>
+</section>
+
+<!-- ==================== 4. 业务流程 ==================== -->
+<section id="s4">
+<div class="container">
+<h2>4. 业务流程</h2>
+
+<h3>4.1 竞赛全生命周期流程</h3>
+<div class="highlight-box">
+    <strong>主流程：</strong>创建竞赛 → 提交审核 → 管理员审核 → 发布竞赛 → 学生报名 → 提交作品 → 评委评审 → 确定决赛名单 → 线下决赛 → 公布结果
+</div>
+<p>以下对各环节进行细化说明：</p>
+
+<h4>4.1.1 创建竞赛</h4>
+<ol>
+    <li>教师登录系统，进入"竞赛管理"，点击"创建竞赛"</li>
+    <li>填写竞赛基本信息（名称、主办单位、学科分类、封面、简介）</li>
+    <li>设置时间节点：报名开始/截止、作品上传开始/截止、评审开始/截止、决赛时间地点、结果公布时间</li>
+    <li>系统校验时间逻辑：报名开始 &lt; 报名截止 &lt; 作品上传截止 &lt; 评审开始 &lt; 评审截止 &lt; 决赛时间 &lt; 结果公布时间</li>
+    <li>配置参赛规则：允许格式、文件大小上限、是否允许个人参赛、团队人数范围、是否需要指导老师</li>
+    <li>填写详细说明（富文本编辑器，支持图文排版）</li>
+    <li>保存草稿或提交审核</li>
+</ol>
+
+<h4>4.1.2 审核与发布</h4>
+<ol>
+    <li>管理员在"审核管理"中查看待审核竞赛列表</li>
+    <li>点击进入竞赛详情，逐项审查信息完整性与合规性</li>
+    <li>审核通过：竞赛状态变为"已发布"，在竞赛广场对学生可见</li>
+    <li>审核驳回：填写驳回理由，竞赛退回至建赛教师的草稿列表</li>
+    <li>教师根据驳回理由修改后重新提交，重复审核流程</li>
+</ol>
+
+<h4>4.1.3 学生报名</h4>
+<ol>
+    <li>学生在竞赛广场浏览已发布竞赛，按条件筛选</li>
+    <li>点击目标竞赛查看详情，确认参赛意愿</li>
+    <li><strong>团队报名：</strong>
+        <ul>
+            <li>创建团队（或使用已有团队）</li>
+            <li>邀请队员加入，队员确认</li>
+            <li>填写报名表单（作品名称、指导老师等）</li>
+            <li>提交报名</li>
+        </ul>
+    </li>
+    <li><strong>个人报名：</strong>
+        <ul>
+            <li>直接填写报名表单</li>
+            <li>提交报名</li>
+        </ul>
+    </li>
+    <li>报名截止后，系统锁定报名名单，生成报名汇总</li>
+</ol>
+
+<h4>4.1.4 作品上传</h4>
+<ol>
+    <li>在作品上传时间段内，队长登录系统</li>
+    <li>进入"我的报名"→ 目标竞赛 → "作品管理"</li>
+    <li>上传作品文件（支持多个，系统校验格式和大小）</li>
+    <li>可删除、重新上传，以最后一次提交为准</li>
+    <li>点击"确认提交"锁定作品，或等待截止时间系统自动锁定</li>
+</ol>
+
+<h4>4.1.5 在线评审</h4>
+<ol>
+    <li>建赛教师在评审开始前完成：
+        <ul>
+            <li>设置评分标准（维度、分值、权重）</li>
+            <li>指派评委（从教师列表中选择）</li>
+            <li>配置分配方式（全体评审 / 分组评审）</li>
+        </ul>
+    </li>
+    <li>评审开始后，评委在"我的评审"中看到待评作品</li>
+    <li>评委下载/查看作品，逐项打分并填写评语</li>
+    <li>评委可暂存评分草稿，确认后正式提交</li>
+    <li>建赛教师实时查看评审进度</li>
+    <li>评审截止后，系统自动汇总计算</li>
+</ol>
+
+<h4>4.1.6 决赛名单与结果公布</h4>
+<ol>
+    <li>建赛教师查看评分汇总及排名</li>
+    <li>根据预设名额确定决赛入围名单</li>
+    <li>公布决赛名单（系统通知入围团队）</li>
+    <li>线下决赛结束后，建赛教师录入决赛结果或调整最终排名</li>
+    <li>设置奖项等级，确认获奖名单</li>
+    <li>点击"公布结果"，系统生成结果公告并公开发布</li>
+</ol>
+
+<h3>4.2 异常流程处理</h3>
+<table>
+    <tr><th>异常场景</th><th>处理方式</th></tr>
+    <tr><td>报名截止时无报名</td><td>系统自动将竞赛标记为"报名不足"，通知建赛教师，教师可选择延期或取消</td></tr>
+    <tr><td>作品上传截止时有报名但未上传作品</td><td>视为放弃参赛，自动取消该报名资格</td></tr>
+    <tr><td>评委人数不足</td><td>评审开始前，建赛教师需补充评委；评审开始后仍不足则提示并记录</td></tr>
+    <tr><td>评审时间到期仍有评委未完成评分</td><td>仅以已提交的评分计算平均分，未评分的评委不计入（或建赛教师可手动延期）</td></tr>
+    <tr><td>决赛时间/地点变更</td><td>建赛教师可编辑决赛信息，系统自动通知相关参赛者</td></tr>
+    <tr><td>竞赛需要取消</td><td>管理员可强制下架竞赛，并填写取消原因，系统通知所有已报名学生</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ==================== 5. 数据字典 ==================== -->
+<section id="s5">
+<div class="container">
+<h2>5. 数据字典</h2>
+
+<h3>5.1 用户表（User）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>user_id</td><td>VARCHAR(32)</td><td>是</td><td>主键，学号/工号</td></tr>
+    <tr><td>name</td><td>VARCHAR(50)</td><td>是</td><td>真实姓名</td></tr>
+    <tr><td>role</td><td>ENUM</td><td>是</td><td>admin / teacher / student</td></tr>
+    <tr><td>college</td><td>VARCHAR(100)</td><td>是</td><td>所属学院</td></tr>
+    <tr><td>major</td><td>VARCHAR(100)</td><td>否</td><td>专业</td></tr>
+    <tr><td>grade</td><td>VARCHAR(20)</td><td>否</td><td>年级（学生）</td></tr>
+    <tr><td>email</td><td>VARCHAR(100)</td><td>否</td><td>邮箱</td></tr>
+    <tr><td>phone</td><td>VARCHAR(20)</td><td>否</td><td>手机号</td></tr>
+    <tr><td>status</td><td>TINYINT</td><td>是</td><td>1=正常 0=停用</td></tr>
+    <tr><td>created_at</td><td>DATETIME</td><td>是</td><td>创建时间</td></tr>
+</table>
+
+<h3>5.2 竞赛表（Competition）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>competition_id</td><td>VARCHAR(32)</td><td>是</td><td>主键，UUID</td></tr>
+    <tr><td>title</td><td>VARCHAR(200)</td><td>是</td><td>竞赛名称</td></tr>
+    <tr><td>organizer</td><td>VARCHAR(100)</td><td>是</td><td>主办单位</td></tr>
+    <tr><td>category</td><td>VARCHAR(50)</td><td>是</td><td>学科分类</td></tr>
+    <tr><td>description</td><td>TEXT</td><td>是</td><td>竞赛简介</td></tr>
+    <tr><td>detail</td><td>LONGTEXT</td><td>否</td><td>详细说明（富文本）</td></tr>
+    <tr><td>cover_image</td><td>VARCHAR(500)</td><td>否</td><td>封面图片URL</td></tr>
+    <tr><td>creator_id</td><td>VARCHAR(32)</td><td>是</td><td>建赛教师工号</td></tr>
+    <tr><td>status</td><td>ENUM</td><td>是</td><td>draft/pending/published/registering/reviewing/final/ended/cancelled</td></tr>
+    <tr><td>reg_start</td><td>DATETIME</td><td>是</td><td>报名开始时间</td></tr>
+    <tr><td>reg_end</td><td>DATETIME</td><td>是</td><td>报名截止时间</td></tr>
+    <tr><td>submit_start</td><td>DATETIME</td><td>是</td><td>作品上传开始时间</td></tr>
+    <tr><td>submit_end</td><td>DATETIME</td><td>是</td><td>作品上传截止时间</td></tr>
+    <tr><td>review_start</td><td>DATETIME</td><td>是</td><td>评审开始时间</td></tr>
+    <tr><td>review_end</td><td>DATETIME</td><td>是</td><td>评审截止时间</td></tr>
+    <tr><td>final_time</td><td>DATETIME</td><td>否</td><td>决赛时间</td></tr>
+    <tr><td>final_location</td><td>VARCHAR(200)</td><td>否</td><td>决赛地点</td></tr>
+    <tr><td>result_time</td><td>DATETIME</td><td>是</td><td>结果公布时间</td></tr>
+    <tr><td>allow_formats</td><td>VARCHAR(500)</td><td>是</td><td>允许的文件格式，逗号分隔（如 zip,rar,pdf,ppt,mp4）</td></tr>
+    <tr><td>max_file_size</td><td>INT</td><td>是</td><td>单文件最大大小（MB），默认100</td></tr>
+    <tr><td>allow_individual</td><td>TINYINT</td><td>是</td><td>是否允许个人参赛，默认0</td></tr>
+    <tr><td>team_min</td><td>INT</td><td>否</td><td>团队最小人数</td></tr>
+    <tr><td>team_max</td><td>INT</td><td>否</td><td>团队最大人数</td></tr>
+    <tr><td>require_advisor</td><td>TINYINT</td><td>是</td><td>是否需要指导老师，默认0</td></tr>
+    <tr><td>review_mode</td><td>ENUM</td><td>是</td><td>评审模式：open(公开) / blind(盲评)，默认open</td></tr>
+    <tr><td>audit_comment</td><td>TEXT</td><td>否</td><td>审核意见/驳回理由</td></tr>
+    <tr><td>created_at</td><td>DATETIME</td><td>是</td><td>创建时间</td></tr>
+    <tr><td>updated_at</td><td>DATETIME</td><td>是</td><td>更新时间</td></tr>
+</table>
+
+<h3>5.3 评分标准表（ScoringRubric）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>rubric_id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>competition_id</td><td>VARCHAR(32)</td><td>是</td><td>关联竞赛</td></tr>
+    <tr><td>name</td><td>VARCHAR(100)</td><td>是</td><td>维度名称（如"创新性"）</td></tr>
+    <tr><td>max_score</td><td>DECIMAL(5,1)</td><td>是</td><td>该维度满分</td></tr>
+    <tr><td>weight</td><td>DECIMAL(3,2)</td><td>是</td><td>权重（0~1），所有维度权重之和=1</td></tr>
+    <tr><td>sort_order</td><td>INT</td><td>是</td><td>排序序号</td></tr>
+</table>
+
+<h3>5.4 团队表（Team）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>team_id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>name</td><td>VARCHAR(100)</td><td>是</td><td>团队名称</td></tr>
+    <tr><td>captain_id</td><td>VARCHAR(32)</td><td>是</td><td>队长学号</td></tr>
+    <tr><td>created_at</td><td>DATETIME</td><td>是</td><td>创建时间</td></tr>
+</table>
+
+<h3>5.5 团队成员表（TeamMember）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>team_id</td><td>VARCHAR(32)</td><td>是</td><td>关联团队</td></tr>
+    <tr><td>student_id</td><td>VARCHAR(32)</td><td>是</td><td>学生学号</td></tr>
+    <tr><td>role</td><td>ENUM</td><td>是</td><td>captain / member</td></tr>
+    <tr><td>status</td><td>ENUM</td><td>是</td><td>invited / accepted / rejected</td></tr>
+</table>
+
+<h3>5.6 报名表（Registration）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>registration_id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>competition_id</td><td>VARCHAR(32)</td><td>是</td><td>关联竞赛</td></tr>
+    <tr><td>team_id</td><td>VARCHAR(32)</td><td>否</td><td>关联团队（团队报名时）</td></tr>
+    <tr><td>student_id</td><td>VARCHAR(32)</td><td>否</td><td>关联学生（个人报名时）</td></tr>
+    <tr><td>work_title</td><td>VARCHAR(200)</td><td>是</td><td>作品名称/参赛题目</td></tr>
+    <tr><td>advisor_id</td><td>VARCHAR(32)</td><td>否</td><td>指导老师工号</td></tr>
+    <tr><td>notes</td><td>TEXT</td><td>否</td><td>补充说明</td></tr>
+    <tr><td>status</td><td>ENUM</td><td>是</td><td>registered / submitted / qualified / disqualified</td></tr>
+    <tr><td>created_at</td><td>DATETIME</td><td>是</td><td>报名时间</td></tr>
+</table>
+
+<h3>5.7 作品文件表（WorkFile）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>file_id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>registration_id</td><td>VARCHAR(32)</td><td>是</td><td>关联报名</td></tr>
+    <tr><td>file_name</td><td>VARCHAR(255)</td><td>是</td><td>原始文件名</td></tr>
+    <tr><td>file_path</td><td>VARCHAR(500)</td><td>是</td><td>存储路径</td></tr>
+    <tr><td>file_size</td><td>BIGINT</td><td>是</td><td>文件大小（字节）</td></tr>
+    <tr><td>file_type</td><td>VARCHAR(50)</td><td>是</td><td>文件扩展名</td></tr>
+    <tr><td>uploaded_at</td><td>DATETIME</td><td>是</td><td>上传时间</td></tr>
+</table>
+
+<h3>5.8 评委指派表（ReviewerAssignment）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>competition_id</td><td>VARCHAR(32)</td><td>是</td><td>关联竞赛</td></tr>
+    <tr><td>teacher_id</td><td>VARCHAR(32)</td><td>是</td><td>评委工号</td></tr>
+    <tr><td>assigned_at</td><td>DATETIME</td><td>是</td><td>指派时间</td></tr>
+</table>
+
+<h3>5.9 评分表（Review）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>review_id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>registration_id</td><td>VARCHAR(32)</td><td>是</td><td>关联报名/作品</td></tr>
+    <tr><td>reviewer_id</td><td>VARCHAR(32)</td><td>是</td><td>评委工号</td></tr>
+    <tr><td>total_score</td><td>DECIMAL(6,2)</td><td>否</td><td>加权总分</td></tr>
+    <tr><td>comment</td><td>TEXT</td><td>否</td><td>综合评语</td></tr>
+    <tr><td>status</td><td>ENUM</td><td>是</td><td>draft / submitted</td></tr>
+    <tr><td>submitted_at</td><td>DATETIME</td><td>否</td><td>提交时间</td></tr>
+</table>
+
+<h3>5.10 评分明细表（ReviewDetail）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>review_id</td><td>VARCHAR(32)</td><td>是</td><td>关联评分</td></tr>
+    <tr><td>rubric_id</td><td>VARCHAR(32)</td><td>是</td><td>关联评分维度</td></tr>
+    <tr><td>score</td><td>DECIMAL(5,1)</td><td>是</td><td>该维度得分</td></tr>
+</table>
+
+<h3>5.11 奖项表（Award）</h3>
+<table>
+    <tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr>
+    <tr><td>award_id</td><td>VARCHAR(32)</td><td>是</td><td>主键</td></tr>
+    <tr><td>competition_id</td><td>VARCHAR(32)</td><td>是</td><td>关联竞赛</td></tr>
+    <tr><td>name</td><td>VARCHAR(100)</td><td>是</td><td>奖项名称（如"一等奖"）</td></tr>
+    <tr><td>quota</td><td>INT</td><td>是</td><td>名额数量</td></tr>
+    <tr><td>registration_id</td><td>VARCHAR(32)</td><td>否</td><td>获奖报名ID（公布后填入）</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ==================== 6. 界面原型要求 ==================== -->
+<section id="s6">
+<div class="container">
+<h2>6. 界面原型要求</h2>
+
+<h3>6.1 页面清单</h3>
+<div class="card-grid">
+    <div class="card">
+        <h4>公共页面</h4>
+        <ul>
+            <li>登录页</li>
+            <li>系统首页 / 竞赛广场</li>
+            <li>竞赛详情页</li>
+            <li>结果公告页</li>
+            <li>个人中心</li>
+            <li>消息中心</li>
+        </ul>
+    </div>
+    <div class="card">
+        <h4>管理员端</h4>
+        <ul>
+            <li>工作台（数据概览）</li>
+            <li>竞赛审核管理</li>
+            <li>全部竞赛管理</li>
+            <li>用户管理</li>
+            <li>基础数据配置</li>
+            <li>操作日志查询</li>
+            <li>数据统计报表</li>
+        </ul>
+    </div>
+    <div class="card">
+        <h4>教师端</h4>
+        <ul>
+            <li>我的竞赛列表</li>
+            <li>创建/编辑竞赛</li>
+            <li>报名管理（报名汇总）</li>
+            <li>作品管理（作品下载）</li>
+            <li>评委指派</li>
+            <li>评分标准设置</li>
+            <li>评审进度监控</li>
+            <li>评分汇总与排名</li>
+            <li>决赛名单管理</li>
+            <li>奖项设置与结果公布</li>
+            <li>我的评审（评委视图）</li>
+        </ul>
+    </div>
+    <div class="card">
+        <h4>学生端</h4>
+        <ul>
+            <li>竞赛广场（浏览/筛选）</li>
+            <li>竞赛详情与报名入口</li>
+            <li>我的团队管理</li>
+            <li>我的报名列表</li>
+            <li>作品上传管理</li>
+            <li>我的评分与结果</li>
+            <li>团队邀请处理</li>
+        </ul>
+    </div>
+</div>
+
+<h3>6.2 关键页面布局建议</h3>
+<h4>竞赛广场（首页）</h4>
+<ul>
+    <li>顶部搜索栏：关键词搜索 + 学科分类筛选 + 状态筛选</li>
+    <li>竞赛卡片列表：封面图、竞赛名称、主办单位、报名时间段、状态标签</li>
+    <li>右侧面板：竞赛日历（展示近期关键日期）、公告栏</li>
+</ul>
+
+<h4>竞赛详情页</h4>
+<ul>
+    <li>顶部：封面大图 + 竞赛名称 + 状态标签</li>
+    <li>主体：竞赛简介、详细说明（富文本）、时间安排时间轴、参赛规则</li>
+    <li>侧边栏：关键时间倒计时、报名按钮（时间段内显示）、操作入口（上传作品/查看结果）</li>
+</ul>
+
+<h4>评审工作台（教师端）</h4>
+<ul>
+    <li>左侧：待评作品列表（显示评审状态）</li>
+    <li>右侧：作品预览/下载区 + 评分表单（各维度滑块或输入框）+ 评语文本框</li>
+    <li>底部：暂存草稿 / 提交评分 按钮</li>
+</ul>
+</div>
+</section>
+
+<!-- ==================== 7. 非功能需求 ==================== -->
+<section id="s7">
+<div class="container">
+<h2>7. 非功能需求</h2>
+
+<h3>7.1 性能要求</h3>
+<table>
+    <tr><th>指标</th><th>要求</th></tr>
+    <tr><td>页面加载时间</td><td>首屏加载 &le; 3秒（P95）</td></tr>
+    <tr><td>接口响应时间</td><td>普通查询 &le; 500ms，复杂统计 &le; 3s</td></tr>
+    <tr><td>文件上传</td><td>支持最大 500MB 单文件上传，支持断点续传</td></tr>
+    <tr><td>并发用户数</td><td>支持峰值 2000 并发用户</td></tr>
+    <tr><td>数据库</td><td>查询热点数据（竞赛列表）需加缓存</td></tr>
+</table>
+
+<h3>7.2 安全要求</h3>
+<ul>
+    <li>对接学校统一身份认证，不独立存储密码</li>
+    <li>敏感操作（审核、公布结果）需二次确认</li>
+    <li>文件上传需校验类型白名单，防止恶意文件上传</li>
+    <li>接口需做权限校验，防止水平越权（如学生调用教师接口）</li>
+    <li>SQL注入、XSS、CSRF 等常见Web漏洞防护</li>
+    <li>评审期间，评委之间不可互看评分（除非建赛教师开放）</li>
+    <li>操作日志记录，满足审计要求</li>
+</ul>
+
+<h3>7.3 可用性要求</h3>
+<ul>
+    <li>系统可用性 &ge; 99.5%（年度）</li>
+    <li>关键时间节点（报名截止前、评审截止前）需保证系统稳定</li>
+    <li>数据每日自动备份，保留最近30天</li>
+</ul>
+
+<h3>7.4 兼容性要求</h3>
+<ul>
+    <li>支持 Chrome、Edge、Firefox 最新两个大版本</li>
+    <li>支持移动端响应式布局（至少保证报名和查看结果可正常操作）</li>
+    <li>支持校内网络环境访问（校园网 + VPN）</li>
+</ul>
+
+<h3>7.5 技术栈建议</h3>
+<table>
+    <tr><th>层级</th><th>建议技术</th><th>备注</th></tr>
+    <tr><td>前端</td><td>Vue 3 + Element Plus / React + Ant Design</td><td>按团队技术栈选型</td></tr>
+    <tr><td>后端</td><td>Spring Boot / Django / Node.js (NestJS)</td><td>按团队技术栈选型</td></tr>
+    <tr><td>数据库</td><td>MySQL 8.0+ / PostgreSQL 14+</td><td></td></tr>
+    <tr><td>缓存</td><td>Redis</td><td>会话管理 + 热点缓存</td></tr>
+    <tr><td>文件存储</td><td>MinIO / 阿里云OSS / 本地存储</td><td>按IT基础设施选择</td></tr>
+    <tr><td>消息队列</td><td>RabbitMQ / Redis Stream</td><td>异步通知、文件处理</td></tr>
+    <tr><td>部署</td><td>Docker + Nginx</td><td></td></tr>
+</table>
+</div>
+</section>
+
+<!-- ==================== 8. 附录 ==================== -->
+<section id="s8">
+<div class="container">
+<h2>8. 附录</h2>
+
+<h3>8.1 文件格式支持清单（建议）</h3>
+<table>
+    <tr><th>类别</th><th>扩展名</th><th>在线预览</th></tr>
+    <tr><td>压缩包</td><td>.zip, .rar, .7z</td><td>❌</td></tr>
+    <tr><td>文档</td><td>.pdf, .doc, .docx, .ppt, .pptx, .xls, .xlsx</td><td>✅ PDF/图片可预览</td></tr>
+    <tr><td>图片</td><td>.jpg, .jpeg, .png, .gif, .bmp</td><td>✅</td></tr>
+    <tr><td>视频</td><td>.mp4, .avi, .mov, .wmv, .flv</td><td>✅ mp4可预览</td></tr>
+    <tr><td>音频</td><td>.mp3, .wav</td><td>✅</td></tr>
+    <tr><td>代码</td><td>.py, .java, .cpp, .js 等</td><td>❌</td></tr>
+</table>
+
+<h3>8.2 学科分类（建议）</h3>
+<ul>
+    <li>理工类：计算机科学与技术、软件工程、电子信息工程、数学与应用数学、物理学、化学等</li>
+    <li>人文社科类：汉语言文学、新闻传播学、法学、外语等</li>
+    <li>经管类：经济学、管理学、会计学、市场营销等</li>
+    <li>艺术体育类：音乐学、美术学、设计学、体育教育等</li>
+    <li>创新创业类：大学生创新创业项目、挑战杯等</li>
+    <li>综合类：跨学科综合竞赛</li>
+</ul>
+
+<h3>8.3 文档修订记录</h3>
+<table>
+    <tr><th>版本</th><th>日期</th><th>修订内容</th><th>修订人</th></tr>
+    <tr><td>V1.0</td><td>2026-04-28</td><td>初稿，完成全部需求章节</td><td>—</td></tr>
+</table>
+</div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>嘉应学院学科竞赛报名评审系统 · 需求规格说明书 V1.0</p>
+    </div>
+</footer>
+
+</body>
+</html>
